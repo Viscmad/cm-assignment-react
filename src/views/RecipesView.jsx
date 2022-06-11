@@ -6,6 +6,7 @@ import getUser from '../api/getUser';
 import trophyIcon from '../assets/trophy.svg';
 import './RecipesView.css';
 import SearchInput from '../components/SearchInput';
+import SpinnerLoader from '../components/SpinnerLoader';
 
 const RecipesView = () => {
 	const navigate = useNavigate();
@@ -15,6 +16,7 @@ const RecipesView = () => {
 		filteredRecipes: [],
 		user: {},
 		error: false,
+		loading: true,
 	});
 
 	const getEnergy = React.useCallback(
@@ -76,12 +78,14 @@ const RecipesView = () => {
 				setState({
 					...state,
 					error: true,
+					loading: false,
 				});
 			} else {
 				setState({
 					...state,
 					recipes,
 					user,
+					loading: false,
 				});
 			}
 		} catch (e) {
@@ -108,71 +112,76 @@ const RecipesView = () => {
 							filterRecipes(value);
 						}}
 					/>
-					{/* TODO: Add loading indicator */}
-					<div className="list">
-						{recipeList.map((recipe, index) => (
-							<div
-								key={index}
-								className="recipe-item"
-								onClick={() => goToSingleRecipe(recipe.id)}
-							>
-								<div className="recipe-name">{recipe.name}</div>
-								<img className="recipeImage" src={recipe.image} />
-								<div className="nutrients">
-									{Object.keys(recipe.nutrients).map((nutrientName) => {
-										const { value, unit } = recipe.nutrients[nutrientName];
-										return (
-											<React.Fragment key={value}>
-												{nutrientName === 'carbs' && (
-													<NutrientItem
-														name={index === 0 ? 'Carbs' : null}
-														value={value + 'g'}
-														className="carbs"
-													/>
-												)}
-												{nutrientName === 'proteins' && (
-													<NutrientItem
-														name={index === 0 ? 'Protein' : null}
-														value={value + 'g'}
-														className="protein"
-													/>
-												)}
-												{nutrientName === 'fats' && (
-													<NutrientItem
-														name={index === 0 ? 'Fat' : null}
-														value={value + 'g'}
-														className="fat"
-													/>
-												)}
-												{nutrientName === 'energy' && (
-													<NutrientItem
-														name={
-															index === 0 ? getEnergy(unit, value).label : null
-														}
-														value={round(getEnergy(unit, value).value)}
-														className="energy"
-													/>
-												)}
-											</React.Fragment>
-										);
-									})}
+					{state.loading ? (
+						<SpinnerLoader />
+					) : (
+						<div className="list">
+							{recipeList.map((recipe, index) => (
+								<div
+									key={index}
+									className="recipe-item"
+									onClick={() => goToSingleRecipe(recipe.id)}
+								>
+									<div className="recipe-name">{recipe.name}</div>
+									<img className="recipeImage" src={recipe.image} />
+									<div className="nutrients">
+										{Object.keys(recipe.nutrients).map((nutrientName) => {
+											const { value, unit } = recipe.nutrients[nutrientName];
+											return (
+												<React.Fragment key={value}>
+													{nutrientName === 'carbs' && (
+														<NutrientItem
+															name={index === 0 ? 'Carbs' : null}
+															value={value + 'g'}
+															className="carbs"
+														/>
+													)}
+													{nutrientName === 'proteins' && (
+														<NutrientItem
+															name={index === 0 ? 'Protein' : null}
+															value={value + 'g'}
+															className="protein"
+														/>
+													)}
+													{nutrientName === 'fats' && (
+														<NutrientItem
+															name={index === 0 ? 'Fat' : null}
+															value={value + 'g'}
+															className="fat"
+														/>
+													)}
+													{nutrientName === 'energy' && (
+														<NutrientItem
+															name={
+																index === 0
+																	? getEnergy(unit, value).label
+																	: null
+															}
+															value={round(getEnergy(unit, value).value)}
+															className="energy"
+														/>
+													)}
+												</React.Fragment>
+											);
+										})}
+									</div>
+									<div className="tags">
+										{recipe.isPremium && (
+											<div className="tag premium">
+												<img className="trophy" src={trophyIcon} />
+												Premium
+											</div>
+										)}
+										{recipe.tags.map((tag) => (
+											<div className="tag" key={tag}>
+												{tag}
+											</div>
+										))}
+									</div>
 								</div>
-								<div className="tags">
-									{recipe.isPremium && (
-										<div className="tag premium">
-											<img className="trophy" src={trophyIcon} />
-											Premium
-										</div>
-									)}
-									{recipe.tags.map((tag) => (
-										<div className="tag" key={tag}>
-											{tag}
-										</div>
-									))}
-								</div>
-							</div>
-						))}
-					</div>
+							))}
+						</div>
+					)}
 				</>
 			)}
 			{!recipeList.length && state.error && <div>Unable to load recipes</div>}
