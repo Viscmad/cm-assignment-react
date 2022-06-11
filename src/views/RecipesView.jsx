@@ -71,6 +71,7 @@ const RecipesView = () => {
 		[navigate]
 	);
 
+	// TODO: Move to redux store
 	const fetchRecipesData = React.useCallback(async () => {
 		try {
 			const recipes = await getRecipes();
