@@ -175,8 +175,7 @@ const RecipesView = () => {
 					</div>
 				</>
 			)}
-			{/* FIXME: Why the error message flashes in initial load? */}
-			{!recipeList.length && <div>Unable to load recipes</div>}
+			{!recipeList.length && state.error && <div>Unable to load recipes</div>}
 		</div>
 	);
 };
