@@ -95,6 +95,38 @@ const RecipesView = () => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
+	const renderNutrientItem = (nutrientItem, index, value, unit) => {
+		const getUnitLabel = () => {
+			switch (unit) {
+				// TODO: add cases as app cases if when needed
+				case 'gram':
+					return 'g';
+				default:
+					return '';
+			}
+		};
+		const getName = () => {
+			if (index !== 0) return null;
+			if (nutrientItem === 'energy') {
+				return getEnergy(unit, value).label;
+			}
+			return nutrientItem.replace(/./, (c) => c.toUpperCase());
+		};
+		const getValue = () => {
+			if (nutrientItem === 'energy') {
+				return round(getEnergy(unit, value).value);
+			}
+			return value + getUnitLabel();
+		};
+		return (
+			<NutrientItem
+				name={getName()}
+				value={getValue()}
+				className={nutrientItem}
+			/>
+		);
+	};
+
 	// Fetch view data on mount
 	React.useEffect(() => {
 		fetchRecipesData();
@@ -127,41 +159,11 @@ const RecipesView = () => {
 									<div className="nutrients">
 										{Object.keys(recipe.nutrients).map((nutrientName) => {
 											const { value, unit } = recipe.nutrients[nutrientName];
-											return (
-												<React.Fragment key={value}>
-													{nutrientName === 'carbs' && (
-														<NutrientItem
-															name={index === 0 ? 'Carbs' : null}
-															value={value + 'g'}
-															className="carbs"
-														/>
-													)}
-													{nutrientName === 'proteins' && (
-														<NutrientItem
-															name={index === 0 ? 'Protein' : null}
-															value={value + 'g'}
-															className="protein"
-														/>
-													)}
-													{nutrientName === 'fats' && (
-														<NutrientItem
-															name={index === 0 ? 'Fat' : null}
-															value={value + 'g'}
-															className="fat"
-														/>
-													)}
-													{nutrientName === 'energy' && (
-														<NutrientItem
-															name={
-																index === 0
-																	? getEnergy(unit, value).label
-																	: null
-															}
-															value={round(getEnergy(unit, value).value)}
-															className="energy"
-														/>
-													)}
-												</React.Fragment>
+											return renderNutrientItem(
+												nutrientName,
+												index,
+												value,
+												unit
 											);
 										})}
 									</div>
