@@ -7,6 +7,7 @@ import trophyIcon from '../assets/trophy.svg';
 import './RecipesView.css';
 import SearchInput from '../components/SearchInput';
 import SpinnerLoader from '../components/SpinnerLoader';
+import EmptyResultMessage from '../components/EmptyListMessage';
 
 const RecipesView = () => {
 	const navigate = useNavigate();
@@ -148,6 +149,15 @@ const RecipesView = () => {
 						<SpinnerLoader />
 					) : (
 						<div className="list">
+							{!recipeList.length && (
+								<EmptyResultMessage
+									message={
+										state.isFiltered
+											? 'No results with the applied search/filters!'
+											: 'No recipes to display!'
+									}
+								/>
+							)}
 							{recipeList.map((recipe, index) => (
 								<div
 									key={index}
