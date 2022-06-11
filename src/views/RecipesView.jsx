@@ -155,7 +155,11 @@ const RecipesView = () => {
 									onClick={() => goToSingleRecipe(recipe.id)}
 								>
 									<div className="recipe-name">{recipe.name}</div>
-									<img className="recipeImage" src={recipe.image} />
+									<img
+										className="recipeImage"
+										src={recipe.image}
+										alt={recipe.name}
+									/>
 									<div className="nutrients">
 										{Object.keys(recipe.nutrients).map((nutrientName) => {
 											const { value, unit } = recipe.nutrients[nutrientName];
