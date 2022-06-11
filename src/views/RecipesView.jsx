@@ -20,7 +20,6 @@ const RecipesView = () => {
 	const getEnergy = React.useCallback(
 		(recipeUnit, value) => {
 			let label;
-
 			if (recipeUnit !== state.user.units.energy) {
 				if (recipeUnit === 'kilojoule') {
 					label = 'kCal';
@@ -36,7 +35,6 @@ const RecipesView = () => {
 					label = 'kCal';
 				}
 			}
-
 			return {
 				label,
 				value,
@@ -70,36 +68,37 @@ const RecipesView = () => {
 		[navigate]
 	);
 
+	const fetchRecipesData = React.useCallback(async () => {
+		try {
+			const recipes = await getRecipes();
+			const user = await getUser();
+			if (!recipes.length) {
+				setState({
+					...state,
+					error: true,
+				});
+			} else {
+				setState({
+					...state,
+					recipes,
+					user,
+				});
+			}
+		} catch (e) {
+			console.error(e);
+		}
+		// Dependencies array left blank to stop recursive call behavior
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
+
 	// Fetch view data on mount
 	React.useEffect(() => {
-		const fetchRecipesData = async () => {
-			try {
-				const recipes = await getRecipes();
-				const user = await getUser();
-
-				if (!recipes.length) {
-					setState({
-						...state,
-						error: true,
-					});
-				} else {
-					setState({
-						...state,
-						recipes,
-						user,
-					});
-				}
-			} catch (e) {
-				console.error(e);
-			}
-		};
 		fetchRecipesData();
-	}, [setState, state]);
+	}, [fetchRecipesData]);
 
 	const recipeList = state.isFiltered ? state.filteredRecipes : state.recipes;
 	return (
 		<div className="recipes">
-			{/* TODO: Create a generic <SearchInput> component */}
 			{!state.error && (
 				<>
 					<SearchInput
