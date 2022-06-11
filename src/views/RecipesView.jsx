@@ -5,6 +5,7 @@ import getRecipes from '../api/getRecipes';
 import getUser from '../api/getUser';
 import trophyIcon from '../assets/trophy.svg';
 import './RecipesView.css';
+import SearchInput from '../components/SearchInput';
 
 const RecipesView = () => {
 	const navigate = useNavigate();
@@ -101,11 +102,12 @@ const RecipesView = () => {
 			{/* TODO: Create a generic <SearchInput> component */}
 			{!state.error && (
 				<>
-					<input
+					<SearchInput
 						placeholder="Search foods and servings&hellip;"
 						className="search"
-						type="text"
-						onInput={({ target }) => filterRecipes(target.value)}
+						onChange={(value) => {
+							filterRecipes(value);
+						}}
 					/>
 					{/* TODO: Add loading indicator */}
 					<div className="list">
